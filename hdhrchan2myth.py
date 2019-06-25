@@ -2,6 +2,10 @@
 
 import sys, json, urllib3, subprocess, os
 
+def removeNonAscii(s):
+	s = s.replace("&", "and")
+	return "".join([x if ord(x) < 128 else '_' for x in s])
+
 if __name__== "__main__":
 	print('Detecting HDHomeRun device')
 	try:
@@ -16,7 +20,8 @@ if __name__== "__main__":
 		print("Detected HDHomeRun device at " + hdhrDevice[0]["LocalIP"])
 		device_auth_response = http.request('GET',hdhrDevice[0]["LineupURL"])
 		data = device_auth_response.data
-		Lineup = json.loads(data)
+		Lineup_raw = json.loads(data)
+		Lineup = removeNonAscii(Lineup_raw)
 		if (len(Lineup) > 0):
 			print("Copying channels from HDHomeRun device")
 			with open('/tmp/xmltv.xml', 'w') as xml_file:
