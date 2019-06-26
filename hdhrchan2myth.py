@@ -20,8 +20,7 @@ if __name__== "__main__":
 		print("Detected HDHomeRun device at " + hdhrDevice[0]["LocalIP"])
 		device_auth_response = http.request('GET',hdhrDevice[0]["LineupURL"])
 		data = device_auth_response.data
-		Lineup_raw = json.loads(data)
-		Lineup = removeNonAscii(Lineup_raw)
+		Lineup = json.loads(data)
 		if (len(Lineup) > 0):
 			print("Copying channels from HDHomeRun device")
 			with open('/tmp/xmltv.xml', 'w') as xml_file:
@@ -30,9 +29,10 @@ if __name__== "__main__":
 				xml_file.write('\n')
 				xml_file.write('<tv source-info-name="HDHR" generator-info-name="hdhrchan2myth.py">'+'\n')
 				for i in range(len(Lineup)):
+					chanName = removeNonAscii(Lineup[i]['GuideName'])
 					xml_file.write(' <channel id="'+Lineup[i]['GuideNumber']+'">'+'\n')
-					xml_file.write('  <display-name>'+Lineup[i]['GuideNumber']+' '+Lineup[i]['GuideName']+'</display-name>'+'\n')
-					xml_file.write('  <display-name>'+Lineup[i]['GuideName']+'</display-name>'+'\n')
+					xml_file.write('  <display-name>'+Lineup[i]['GuideNumber']+' '+chanName+'</display-name>'+'\n')
+					xml_file.write('  <display-name>'+chanName+'</display-name>'+'\n')
 					xml_file.write('  <display-name>'+Lineup[i]['GuideNumber']+'</display-name>'+'\n')
 					xml_file.write(' </channel>'+'\n')
 				xml_file.write('</tv>')
